@@ -1,6 +1,6 @@
 Name:           perl-HTTP-Daemon
 Version:        6.01
-Release:        23%{?dist}
+Release:        24%{?dist}
 Summary:        Simple HTTP server class
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/HTTP-Daemon/
@@ -13,6 +13,8 @@ Patch0:         HTTP-Daemon-6.01-Add-IPv6-support.patch
 Patch1:         HTTP-Daemon-6.01-Handle-undef-and-empty-LocalAddr.patch
 # Fix formatting specific non-local addresses, bug #1578026, CPAN RT#125242
 Patch2:         HTTP-Daemon-6.01-Resolve-specific-socket-addresses-correctly.patch
+# https://github.com/libwww-perl/HTTP-Daemon/commit/945d35141d94490f749640bd4390acd6a2193995
+Patch3:         HTTP-Daemon-6.01-CVE-2026-8450.patch
 BuildArch:      noarch
 BuildRequires:  make
 BuildRequires:  perl-generators
@@ -62,6 +64,7 @@ IO::Socket::IP, so you can perform socket operations directly on it too.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -80,6 +83,10 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 17 2026 RHEL Packaging Agent <redhat-ymir-agent@redhat.com> - 6.01-24
+- Fix CVE-2026-8450: send_file() shell-magic injection via 2-arg open()
+- Resolves: RHEL-184825
+
 * Wed May 23 2018 Petr Pisar <ppisar@redhat.com> - 6.01-23
 - Fix formatting numerical non-local specific IPv6 addresses (bug #1578026)
 
