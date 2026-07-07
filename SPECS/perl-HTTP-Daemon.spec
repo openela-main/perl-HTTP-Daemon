@@ -3,13 +3,15 @@
 
 Name:           perl-HTTP-Daemon
 Version:        6.16
-Release:        7%{?dist}
+Release:        7%{?dist}.1
 Summary:        Simple HTTP server class
 License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/release/HTTP-Daemon
 Source0:        https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Daemon-%{version}.tar.gz
 # Use Makefile.PL without unneeded dependencies
 Patch0:         HTTP-Daemon-6.04-EU-MM-is-not-deprecated.patch
+# https://github.com/libwww-perl/HTTP-Daemon/commit/945d35141d94490f749640bd4390acd6a2193995
+Patch1:         perl-HTTP-Daemon-6.16-CVE-2026-8450.patch
 BuildArch:      noarch
 BuildRequires:  coreutils
 BuildRequires:  make
@@ -83,6 +85,7 @@ with "%{_libexecdir}/%{name}/test".
 %prep
 %setup -q -n HTTP-Daemon-%{version}
 %patch -P0 -p1
+%patch -P1 -p1
 # Help generators to recognize Perl scripts
 for F in $(find t/ -name '*.t'); do
     perl -i -MConfig -ple 'print $Config{startperl} if $. == 1 && !s{\A#!\s*perl}{$Config{startperl}}' "$F"
@@ -118,6 +121,10 @@ make test
 %{_libexecdir}/%{name}
 
 %changelog
+* Wed Jun 17 2026 RHEL Packaging Agent <redhat-ymir-agent@redhat.com> - 6.16-7.1
+- Fix CVE-2026-8450: send_file() shell-magic via 2-arg open()
+- Resolves: RHEL-184826
+
 * Tue Oct 29 2024 Troy Dawson <tdawson@redhat.com> - 6.16-7
 - Bump release for October 2024 mass rebuild:
   Resolves: RHEL-64018
