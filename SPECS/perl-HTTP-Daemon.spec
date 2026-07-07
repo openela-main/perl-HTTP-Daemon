@@ -1,12 +1,15 @@
 Name:           perl-HTTP-Daemon
 Version:        6.12
-Release:        6%{?dist}
+Release:        6%{?dist}.1
 Summary:        Simple HTTP server class
 License:        GPL+ or Artistic
 URL:            https://metacpan.org/release/HTTP-Daemon
 Source0:        https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Daemon-%{version}.tar.gz
 # Use Makefile.PL without unneeded dependencies
 Patch0:         HTTP-Daemon-6.04-EU-MM-is-not-deprecated.patch
+# https://github.com/libwww-perl/HTTP-Daemon/commit/945d35141d94490f749640bd4390acd6a2193995
+# https://github.com/libwww-perl/HTTP-Daemon/commit/de619f3eb826cc088cb20051adf7db36114a3f21
+Patch1:         perl-HTTP-Daemon-6.12-CVE-2026-8450.patch
 BuildArch:      noarch
 BuildRequires:  make
 BuildRequires:  perl-generators
@@ -59,6 +62,7 @@ IO::Socket::IP, so you can perform socket operations directly on it too.
 %prep
 %setup -q -n HTTP-Daemon-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
@@ -81,6 +85,10 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 17 2026 RHEL Packaging Agent <redhat-ymir-agent@redhat.com> - 6.12-6.1
+- Fix CVE-2026-8450: send_file() shell-magic injection via 2-arg open()
+- Resolves: RHEL-184829
+
 * Mon Aug 09 2021 Mohan Boddu <mboddu@redhat.com> - 6.12-6
 - Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
   Related: rhbz#1991688
